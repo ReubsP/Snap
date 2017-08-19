@@ -20,3 +20,16 @@ void serialEvent(Serial serialPort) {
   //  serialPort.write("A\n");
   //}
 }
+
+String teensyPort(){
+  String result = "";
+  String[] s = Serial.list();
+  for(byte i=0; i<s.length; i++){
+    if(s[i].contains("teensy")){
+      result = s[i];
+      break;
+    }
+  }
+  println("selected port:",result);
+  return result;
+}

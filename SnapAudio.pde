@@ -31,8 +31,8 @@ void setup(){
   forceFont = createFont("Lato-Medium.ttf", 50);     // Font for forces
     // Print a list of the serial ports, for debugging purposes:
   printArray(Serial.list());
-  String portName = Serial.list()[4];
-  serialPort = new Serial(this, portName, 9600);
+  //String portName = Serial.list()[4];
+  serialPort = new Serial(this, teensyPort(), 9600);
   serialPort.write("A\n");
   cycleNum = 1;
   
