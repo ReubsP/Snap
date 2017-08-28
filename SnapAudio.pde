@@ -8,9 +8,12 @@ import processing.serial.*;
 import java.util.*;
 import java.text.*;
 import static javax.swing.JOptionPane.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
+String outFilename = "/Users/home/Desktop/table3.csv";
 
 static String TeensyName = "Blue";
-static String tableFile = "/Users/home/Desktop/table.csv";
 
 Serial serialPort;  // Create object from Serial class
 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
