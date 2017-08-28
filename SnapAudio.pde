@@ -94,7 +94,7 @@ void draw(){
   // Draw Cycles at the top
   textFont(cycleFont);
   fill(255);
-  String cycleText = "Cycles: " + nfc(cycleNum-1);
+  String cycleText = "Cycles: " + nfc(cycleNum);
   text(cycleText, 100, 180);
   
   textFont(forceFont);

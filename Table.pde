@@ -25,14 +25,15 @@ void loadData() {
 }
 
 void saveData() {
-  Cycle lastCycle = cycles[cycles.length-1];
+  Cycle c = cycles[cycles.length-1];
+  if(c.left && c.right && c.ground) successes++;
   TableRow newRow = table.addRow();
-  newRow.setString("Time", lastCycle.timeString);
-  newRow.setString("Left", boolToStr(lastCycle.left));
-  newRow.setString("Right", boolToStr(lastCycle.right));
-  newRow.setString("Ground", boolToStr(lastCycle.ground));
-  newRow.setString("Push", nf(lastCycle.push,3,1));
-  newRow.setString("Pull", nf(lastCycle.pull,3,1));
+  newRow.setString("Time", c.timeString);
+  newRow.setString("Left", boolToStr(c.left));
+  newRow.setString("Right", boolToStr(c.right));
+  newRow.setString("Ground", boolToStr(c.ground));
+  newRow.setString("Push", nf(c.push,3,1));
+  newRow.setString("Pull", nf(c.pull,3,1));
   
   saveTable(table, "table.csv");
 }

@@ -13,11 +13,6 @@ class Cycle {
     ground = strToBool(g_);
     push = push_;
     pull = pull_;
-    //increase success count
-    if(left && right && ground) successes++;
-    println(timeString,unixTime,left,right,ground,push,pull);
-    print("successes:");
-    println(successes);
   }
   Cycle(String t_, boolean l_, boolean r_, boolean g_, float push_, float pull_){
     timeString = t_; 
@@ -27,11 +22,6 @@ class Cycle {
     ground = g_;
     push = push_;
     pull = pull_;
-    //increase success count
-    if(left && right && ground) successes++;
-    println(timeString,unixTime,left,right,ground,push,pull);
-    print("successes:");
-    println(successes);
   }
   Cycle(String t_){
     timeString = t_; 
@@ -41,11 +31,6 @@ class Cycle {
     ground = true;
     push = random(100,400);
     pull = random(100,400);
-    //increase success count
-    if(left && right && ground) successes++;
-    println(timeString,unixTime,left,right,ground,push,pull);
-    print("successes:");
-    println(successes);
   }
 }
 
