@@ -10,6 +10,7 @@ import java.text.*;
 import static javax.swing.JOptionPane.*;
 
 static String TeensyName = "Blue";
+static String tableFile = "/Users/home/Desktop/table.csv";
 
 Serial serialPort;  // Create object from Serial class
 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -25,6 +26,8 @@ int pullPeakTime, pushPeakTime;
 int maxPush = 300;
 int ackTime;
 boolean dirIn, prevDir;
+boolean autoAdd;
+int autoAddTime;
 
 int serialCount = 0;                 // A count of how many bytes we receive
 
@@ -87,6 +90,27 @@ void draw(){
     pushPeak = 0;
   }
   prevDir = dirIn;
+  
+  if(autoAdd){
+    pushForce = noise(millis()/1000.1) * 250;
+    pullForce = noise(millis()/1000.1 + 1000) *250;
+    if(millis() > autoAddTime + 200){
+      autoAddTime = millis();
+      Cycle c =  cycles[cycleNum];
+
+      c.push = pushPeak;
+      c.pull = pullPeak;
+      c.left = con1;
+      c.right = con2;
+      c.ground = con3;
+  
+      saveData();
+      newCycle();
+      
+      pushPeak = 0;
+      pullPeak = 0;
+    }
+  }
   
   background(0);
   textAlign(LEFT);
@@ -179,13 +203,16 @@ void keyPressed() {
   }
   else if(key == '1'){
     con1 = !con1;
-    println("con1");
   }
   else if(key == '2'){
     con2 = !con2;
   }
   else if(key == '3'){
     con3 = !con3;
+  }
+  
+  else if(key == 'a'){
+    autoAdd = !autoAdd;
   }
 }
 

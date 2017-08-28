@@ -1,7 +1,7 @@
 void loadData() {
   // Load CSV file into a Table object
   // "header" option indicates the file has a header row
-  table = loadTable("table.csv", "header");
+  table = loadTable(tableFile, "header");
 
   // The size of the array of Bubble objects is determined by the total number of rows in the CSV
   cycles = new Cycle[table.getRowCount()]; 
@@ -19,7 +19,7 @@ void loadData() {
     // Make a event object
     cycles[rowCount] = new Cycle(t,l,r,g,push,pull);
     rowCount++;
-    
+    if(l.equals("1") && r.equals("1") && g.equals("1")) successes++;
   }
   
 }
@@ -35,5 +35,5 @@ void saveData() {
   newRow.setString("Push", nf(c.push,3,1));
   newRow.setString("Pull", nf(c.pull,3,1));
   
-  saveTable(table, "table.csv");
+  saveTable(table, tableFile);
 }

@@ -45,6 +45,7 @@ void newCycleRandom(){
   //cycles[cycleNum] = new Cycle(currentDate()); 
   Cycle c = new Cycle(currentDate());
   cycles = (Cycle[]) append(cycles, c);
+  cycleNum++;
 }
 
 boolean strToBool(String in){
