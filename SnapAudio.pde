@@ -7,6 +7,9 @@
 import processing.serial.*;
 import java.util.*;
 import java.text.*;
+import static javax.swing.JOptionPane.*;
+
+static String TeensyName = "Blue";
 
 Serial serialPort;  // Create object from Serial class
 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -14,14 +17,15 @@ SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 Table table;       // For CSV data
 
 PFont cycleFont, connectFont, forceFont;
-int cycleNum;
+int cycleNum, successes;
 Cycle[] cycles;
 boolean con1, con2, con3;  // Connections
 float pullForce, pushForce, pullPeak, pushPeak;
 int pullPeakTime, pushPeakTime;
-float noisePos;
+int maxPush = 300;
+int ackTime;
+boolean dirIn, prevDir;
 
-int[] serialInArray = new int[9];    // Where we'll put what we receive
 int serialCount = 0;                 // A count of how many bytes we receive
 
 void setup(){
@@ -32,6 +36,10 @@ void setup(){
     // Print a list of the serial ports, for debugging purposes:
   printArray(Serial.list());
   //String portName = Serial.list()[4];
+  while(teensyPort().equals("")){
+    showMessageDialog(null, "Port not found!\nPlease plug in device", "Alert", ERROR_MESSAGE);
+    printArray(Serial.list());
+  }
   serialPort = new Serial(this, teensyPort(), 9600);
   serialPort.write("A\n");
   cycleNum = 1;
@@ -39,12 +47,16 @@ void setup(){
   sdf.setTimeZone(TimeZone.getTimeZone("GMT+12"));
   
   loadData();
+  cycleNum = cycles.length-1;
+  newCycle();
 }
 
 void draw(){
-  noisePos += 0.01;
-  pullForce = serialInArray[3];
-  pushForce = serialInArray[4];
+  if(millis() > ackTime + 100){
+    serialPort.write("A\n");
+    ackTime = millis();
+  }
+  
   
   if(pushForce > pushPeak){
     pushPeak = pushForce;
@@ -54,15 +66,27 @@ void draw(){
     pullPeak = pullForce;
     pullPeakTime = millis();
   }
+
   
-  if(millis() > pushPeakTime+700) pushPeak -= 0.3;
-  if(millis() > pullPeakTime+700) pullPeak -= 0.3;
+  Cycle thisCycle =  cycles[cycleNum];
   
-  con1 = intToBool(serialInArray[0]);
-  con2 = intToBool(serialInArray[1]);
-  con3 = intToBool(serialInArray[2]);
+  //If it was going in but isn't now, save push and connection status
+  if(prevDir && !dirIn){
+    thisCycle.push = pushPeak;
+    thisCycle.left = con1;
+    thisCycle.right = con2;
+    thisCycle.ground = con3;
+    pullPeak = 0;
+  }
   
-  readCycle();
+  // if it wasn't going in before but is now, new cycle
+  if(!prevDir && dirIn){
+    thisCycle.pull = pullPeak;
+    saveData();
+    newCycle();
+    pushPeak = 0;
+  }
+  prevDir = dirIn;
   
   background(0);
   textAlign(LEFT);
@@ -70,8 +94,14 @@ void draw(){
   // Draw Cycles at the top
   textFont(cycleFont);
   fill(255);
-  String cycleText = "Cycle: " + nfc(cycleNum);
+  String cycleText = "Cycles: " + nfc(cycleNum-1);
   text(cycleText, 100, 180);
+  
+  textFont(forceFont);
+  fill(255);
+  float successRate = float(successes)/float(cycleNum)* 100;
+  String successText = "Success rate: " + nfc(successRate, 2) + " %";
+  text(successText, 50, 300);
   
   // Draw connection status in middle
   
@@ -81,13 +111,13 @@ void draw(){
   strokeWeight(6);
   if(con1) stroke(0,200,0);
   else stroke(200,0,0);
-  ellipse(100, 270, 30, 30);
+  ellipse(100, 370, 30, 30);
   if(con2) stroke(0,200,0);
   else stroke(200,0,0);
-  ellipse(100, 270, 60, 60);
+  ellipse(100, 370, 60, 60);
   if(con3) stroke(0,200,0);
   else stroke(200,0,0);
-  ellipse(100, 270, 90, 90);
+  ellipse(100, 370, 90, 90);
   
   //Text
   textFont(connectFont);
@@ -100,7 +130,7 @@ void draw(){
     connectText = "Not Connected";
     fill(200,0,0);
   }
-  text(connectText, 200, 300);
+  text(connectText, 200, 400);
   
   
   // Draw Forces
@@ -131,7 +161,32 @@ void draw(){
 
 
 void keyPressed() {
-  if(key == 'r') serialPort.write("r\n");
+  if(key == 'n'){
+    Cycle thisCycle =  cycles[cycleNum];
+
+    thisCycle.push = pushPeak;
+    thisCycle.pull = pullPeak;
+    thisCycle.left = con1;
+    thisCycle.right = con2;
+    thisCycle.ground = con3;
+
+    saveData();
+    newCycle();
+  }
+  else if(key == 'r'){
+    pushPeak = random(30,200);
+    pullPeak = random(30,200);
+  }
+  else if(key == '1'){
+    con1 = !con1;
+    println("con1");
+  }
+  else if(key == '2'){
+    con2 = !con2;
+  }
+  else if(key == '3'){
+    con3 = !con3;
+  }
 }
 
 
@@ -141,13 +196,13 @@ boolean intToBool(int in){
   return result;
 }
 
-void readCycle(){
-  int c = serialInArray[5];
-  c <<= 8;
-  c |= serialInArray[6];
-  c <<= 8;
-  c |= serialInArray[7];
-  c <<= 8;
-  c |= serialInArray[8];
-  cycleNum = c;
-}
+//void readCycle(){
+//  int c = serialInArray[5];
+//  c <<= 8;
+//  c |= serialInArray[6];
+//  c <<= 8;
+//  c |= serialInArray[7];
+//  c <<= 8;
+//  c |= serialInArray[8];
+//  cycleNum = c;
+//}

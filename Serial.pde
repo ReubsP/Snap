@@ -6,30 +6,48 @@ void serialEvent(Serial serialPort) {
   // had first contact from the microcontroller. 
   // Otherwise, add the incoming byte to the array:
 
-  if (inByte == 'I') { 
+  if (inByte == 'S') { 
     serialPort.clear();          // clear the serial port buffer
     serialCount = 0;
   } 
+  
 
-  else if (serialCount < 9){
+  else if (serialCount < 6){
     // Add the latest byte from the serial port to array:
-    serialInArray[serialCount] = inByte;
+    switch(serialCount){
+      case 0:
+        con1 = intToBool(inByte);
+        break;
+      case 1:
+        con2 = intToBool(inByte);
+        break;
+      case 2:
+        con3 = intToBool(inByte);
+        break;
+      case 3:
+        pullForce = inByte;
+        break;
+      case 4:
+        pushForce = inByte;
+        break;
+      case 5:
+        dirIn = intToBool(inByte);
+        break;
+    }
     serialCount++;
   }
-  //else if (serialCount == 5){
-  //  serialPort.write("A\n");
-  //}
+  // Order of serial input: left, right, centre, push, pull, direction
 }
 
 String teensyPort(){
   String result = "";
   String[] s = Serial.list();
   for(byte i=0; i<s.length; i++){
-    if(s[i].contains("teensy")){
+    if(s[i].contains(TeensyName)){
       result = s[i];
+      println("selected port:",result);
       break;
     }
   }
-  println("selected port:",result);
   return result;
 }

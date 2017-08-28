@@ -19,15 +19,20 @@ void loadData() {
     // Make a event object
     cycles[rowCount] = new Cycle(t,l,r,g,push,pull);
     rowCount++;
+    
   }
   
 }
 
-//void saveData() {
-//  for(int i=0; i < events.length; i++){
-//    String t = events[i].timeString;
-//    TableRow thisRow = table.getRow(i);
-//    thisRow.setString("time",t);
-//  }
-//  saveTable(table, "runsheet.csv");
-//}
+void saveData() {
+  Cycle lastCycle = cycles[cycles.length-1];
+  TableRow newRow = table.addRow();
+  newRow.setString("Time", lastCycle.timeString);
+  newRow.setString("Left", boolToStr(lastCycle.left));
+  newRow.setString("Right", boolToStr(lastCycle.right));
+  newRow.setString("Ground", boolToStr(lastCycle.ground));
+  newRow.setString("Push", nf(lastCycle.push,3,1));
+  newRow.setString("Pull", nf(lastCycle.pull,3,1));
+  
+  saveTable(table, "table.csv");
+}

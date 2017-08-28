@@ -2,10 +2,10 @@ class Cycle {
   long unixTime;
   String timeString;
   boolean left, right, ground;
-  int push, pull;
+  float push, pull;
   
   //t,l,r,g,push,pull
-  Cycle(String t_, String l_, String r_, String g_, int push_, int pull_){
+  Cycle(String t_, String l_, String r_, String g_, float push_, float pull_){
     timeString = t_; 
     unixTime = stringToUnix(timeString);
     left = strToBool(l_);
@@ -13,8 +13,53 @@ class Cycle {
     ground = strToBool(g_);
     push = push_;
     pull = pull_;
+    //increase success count
+    if(left && right && ground) successes++;
     println(timeString,unixTime,left,right,ground,push,pull);
+    print("successes:");
+    println(successes);
   }
+  Cycle(String t_, boolean l_, boolean r_, boolean g_, float push_, float pull_){
+    timeString = t_; 
+    unixTime = stringToUnix(timeString);
+    left = l_;
+    right = r_;
+    ground = g_;
+    push = push_;
+    pull = pull_;
+    //increase success count
+    if(left && right && ground) successes++;
+    println(timeString,unixTime,left,right,ground,push,pull);
+    print("successes:");
+    println(successes);
+  }
+  Cycle(String t_){
+    timeString = t_; 
+    unixTime = stringToUnix(timeString);
+    left = true;
+    right = true;
+    ground = true;
+    push = random(100,400);
+    pull = random(100,400);
+    //increase success count
+    if(left && right && ground) successes++;
+    println(timeString,unixTime,left,right,ground,push,pull);
+    print("successes:");
+    println(successes);
+  }
+}
+
+void newCycle(){
+  //cycles[cycleNum+1] = new Cycle(currentDate(),false,false,false,0,0); 
+  Cycle c = new Cycle(currentDate(),false,false,false,0,0);
+  cycles = (Cycle[]) append(cycles, c);
+  cycleNum++;
+  //append(cycles, new Cycle(currentDate(),false,false,false,0,0)); 
+}
+void newCycleRandom(){
+  //cycles[cycleNum] = new Cycle(currentDate()); 
+  Cycle c = new Cycle(currentDate());
+  cycles = (Cycle[]) append(cycles, c);
 }
 
 boolean strToBool(String in){
@@ -23,7 +68,11 @@ boolean strToBool(String in){
   return result;
 }
 
-
+String boolToStr(boolean in){
+  String result = "1";
+  if(!in) result = "0";
+  return result;
+}
 
 String unixToString(long unixSeconds){
   //---Date date = new Date() --- will give the current unix time
@@ -32,6 +81,11 @@ String unixToString(long unixSeconds){
   return dateString;
 }
 
+String currentDate(){
+  Date date = new Date();
+  String dateString = sdf.format(date);
+  return dateString;
+}
 
 long stringToUnix(String timeStr){
   long result = 0;
