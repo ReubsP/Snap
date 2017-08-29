@@ -1,4 +1,5 @@
 void serialEvent(Serial serialPort) {
+  serTime = millis();
   // read a byte from the serial port:
   int inByte = serialPort.read();
   // if this is the first byte received, and it's an A,

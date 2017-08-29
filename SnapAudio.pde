@@ -11,9 +11,9 @@ import static javax.swing.JOptionPane.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-String outFilename = "/Users/home/Desktop/table3.csv";
+String outFilename = System.getProperty("user.home") + "/Desktop/table.csv";
 
-static String TeensyName = "Blue";
+static String TeensyName = "modem";
 
 Serial serialPort;  // Create object from Serial class
 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -27,7 +27,7 @@ boolean con1, con2, con3;  // Connections
 float pullForce, pushForce, pullPeak, pushPeak;
 int pullPeakTime, pushPeakTime;
 int maxPush = 300;
-int ackTime;
+int ackTime, serTime;
 boolean dirIn, prevDir;
 boolean autoAdd;
 int autoAddTime;
@@ -51,7 +51,7 @@ void setup(){
   cycleNum = 1;
   
   sdf.setTimeZone(TimeZone.getTimeZone("GMT+12"));
-  
+  println("loading from " + outFilename);
   loadData();
   cycleNum = cycles.length-1;
   newCycle();
@@ -61,6 +61,13 @@ void draw(){
   if(millis() > ackTime + 100){
     serialPort.write("A\n");
     ackTime = millis();
+  }
+  if(millis() > serTime + 500){
+    while(teensyPort().equals("")){
+      showMessageDialog(null, "Not receiving data!\nPlease plug in device", "Alert", ERROR_MESSAGE);
+      printArray(Serial.list());
+    }
+    serialPort = new Serial(this, teensyPort(), 9600);
   }
   
   

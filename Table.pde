@@ -48,7 +48,7 @@ void saveData() {
   
   //saveTable(table, tableFile);
   
-  String lineString = c.timeString+","+boolToStr(c.left)+","+boolToStr(c.right)+","+boolToStr(c.ground)+","+nf(c.push,3,1)+","+nf(c.pull,3,1)+"\n";
+  String lineString = c.timeString+","+boolToStr(c.left)+","+boolToStr(c.right)+","+boolToStr(c.ground)+","+nf(c.push,3,1)+","+nf(c.pull,3,1);
   println(lineString);
   appendTextToFile(outFilename, lineString);
 }
